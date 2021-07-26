@@ -1,5 +1,5 @@
 import { assert, assertEquals } from "https://deno.land/std@0.103.0/testing/asserts.ts"
-import Trie from "./trie.ts"
+import Trie from "../src/trie.ts"
 
 Deno.test("Constructor", () => {
   const trie = new Trie();

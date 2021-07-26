@@ -12,17 +12,19 @@ export default class TrieServer {
   constructor(stateFile: string) {
     this.stateFile = stateFile;
 
-    ensureFileSync(stateFile);
-    const state = Deno.readTextFileSync(stateFile);
-
-    try { this.#state = JSON.parse(state); }
+    try {
+      ensureFileSync(stateFile);
+      const state = Deno.readTextFileSync(stateFile);
+      const object = JSON.parse(state);
+      this.#state = Trie.from(object);
+    }
     catch (error) {
       console.warn(`JSON parsing failed: ${error}. Using empty trie instead.`);
       this.#state = new Trie();
     }
   }
 
-  // Serve the trie on port
+  /// Serve the trie on port
   async serve(port = 8080) {
     for await (const req of serve({port})) {
       try {
@@ -32,10 +34,7 @@ export default class TrieServer {
         const body = JSON.parse(decodedBody);
 
         const output = this.dispatchAction(body.action ?? '', body);
-        const writeState = this.writeState();
-
         req.respond({ status: 200, body: output });
-        await writeState;
       }
       catch (error) {
         req.respond({ status: 500, body: error.toString() });
@@ -43,7 +42,7 @@ export default class TrieServer {
     }
   }
 
-  // Run an action based on the given request on the internal trie
+  /// Run an action based on the given request on the internal trie
   dispatchAction(action: string, body: Record<string, string>): string {
     let result = '';
 
@@ -77,10 +76,11 @@ export default class TrieServer {
       default: throw `Invalid action: ${action}`;
     }
 
+    this.writeState();
     return result;
   }
 
-  // Write the state of the server to persistent memory
+  /// Write the state of the server to persistent memory
   async writeState() {
     const str = JSON.stringify(this.#state);
     await Deno.writeTextFile(this.stateFile, str);
