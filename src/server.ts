@@ -26,20 +26,23 @@ export default class TrieServer {
   }
 
   /// Serve the trie on port
-  async serve(port = 8080) {
-    for await (const req of serve({port})) {
+  async serve(port = '8080') {
+    for await (const req of serve({port: parseInt(port)})) {
       try {
-        const rawBody = await readAll(req.body)
-        const decodedBody = new TextDecoder('utf-8').decode(rawBody);
+        if (req.headers.get('Content-Type') !== 'application/json')
+          throw "Non-JSON request recieved!";
+
+        const rawBody: Uint8Array = await readAll(req.body)
+        const decodedBody: string = new TextDecoder('utf-8').decode(rawBody);
         log.debug(`REQUEST: ${decodedBody}`)
-        const body = JSON.parse(decodedBody);
+        const body: Record<string, string> = JSON.parse(decodedBody);
 
         const output = this.dispatchAction(body.action ?? '', body);
         req.respond({ status: 200, body: output });
       }
       catch (error) {
         log.error(`Request errored: ${error.toString()}`)
-        req.respond({ status: 500, body: error.toString() });
+        req.respond({ status: 500, body: `Error: ${error}` });
       }
     }
   }
@@ -48,30 +51,30 @@ export default class TrieServer {
   dispatchAction(action: string, body: Record<string, string>): string {
     let result = '';
 
-    switch (action) {
-      case 'Add':
+    switch (action?.toLowerCase()) {
+      case 'add':
         this.#state.addKey(body.key ?? '');
       break;
 
-      case 'Remove':
+      case 'remove':
         this.#state.removeKey(body.key ?? '');
       break;
 
-      case 'Find':
+      case 'find':
         result = this.#state.findKey(body.key ?? '').toString();
       break;
 
-      case 'Suggest': {
+      case 'suggest': {
         const count = parseInt(body.count ?? '10');
         result = this.#state.getCompletions(body.prefix, count).join('\n');
       break;}
 
-      case 'Show':
+      case 'show':
         result = this.#state.toString();
       break;
 
-      case 'Help':
-        result = `Actions: Add, Remove, Find, Suggest, Show, Help`;
+      case 'help':
+        result = `Actions: add, remove, find, suggest, show, help`;
       break;
 
       case '': throw "No action specified!";
