@@ -7,17 +7,26 @@ export default class Trie {
   }
 
   /// Add a key to the trie
-  addKey(key: string): boolean {
-    return this.root.addKey(key);
+  addKey(key: string) {
+    if (key.length === 0)
+      throw "Attempted to add empty or missing key!";
+
+    this.root.addKey(key);
   }
 
   /// Remove a key from the trie
-  removeKey(key: string): boolean {
-    return this.root.removeKey(key);
+  removeKey(key: string) {
+    if (key.length === 0)
+      throw "Attempted to remove an empty or missing key!";
+
+    this.root.removeKey(key);
   }
 
   /// Find if the trie contains a key
   findKey(key: string): boolean {
+    if (key.length === 0)
+      return false;
+
     return this.root.hasKey(key);
   }
 
@@ -43,11 +52,11 @@ class Node {
     this.children = {};
   }
 
-  addKey(key: string): boolean {
+  addKey(key: string) {
     // Handle the case where this is the node we are looking for
     if (key.length === 0) {
       if (this.isResult)
-        return false;
+        throw "Attempted to add an already existing key!";
 
       this.isResult = true;
       return true;
@@ -56,40 +65,35 @@ class Node {
     // Recursively add the remaining characters, taking advantage of tail call optimisation
     const childData: string = key.charAt(0);
     this.children[childData] ??= new Node();
-    return this.children[childData].addKey(key.substring(1));
+    this.children[childData].addKey(key.substring(1));
   }
 
-  removeKey(key: string): boolean {
-    const _removeKey = (node: Node, key: string): { success: boolean, delete?: boolean } => {
-      let success = false;
+  removeKey(key: string) {
+    const _removeKey = (node: Node, key: string) => {
+      if ((node ?? undefined) === undefined)
+        throw "Could not remove a nonexistent key!";
 
       if (key.length === 0) {
         // Handle case where this node is the target
         if (!node.isResult)
-          return { success: false };
+          throw "Could not remove a node which is not a valid result!";
 
         node.isResult = false;
-        success = true;
       }
       else {
         // Handle the case where this node is a parent of the target
         const childData: string = key.charAt(0);
         const result = _removeKey(node.children[childData], key.substring(1));
 
-        if (result.delete)
+        if (result)
           delete node.children[childData];
-
-        success = result.success;
       }
 
       // Ensure that dangling nodes are cleaned up
-      return {
-        success,
-        delete: Object.keys(node.children).length === 0,
-      }
+      return Object.keys(node.children).length === 0;
     }
 
-    return _removeKey(this, key).success;
+    _removeKey(this, key);
   }
 
   hasKey(key: string): boolean {
