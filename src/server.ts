@@ -9,7 +9,7 @@ export default class TrieServer {
   #state: Trie;
   readonly stateFile: string;
 
-  constructor(stateFile: string) {
+  constructor(stateFile = "/tmp/trie_server.state.json") {
     this.stateFile = stateFile;
 
     try {
@@ -95,8 +95,8 @@ function parseServerArgs(args: string[]): Args {
     },
     string: [ 'port', 'state' ],
     default: {
-      p: 8080,
-      s: "/tmp/trie_server.state.json"
+      port: 8080,
+      state: undefined
     }
   };
 
@@ -106,6 +106,9 @@ function parseServerArgs(args: string[]): Args {
 if (import.meta.main) {
   const args = parseServerArgs(Deno.args);
   console.log(`Starting server on port ${args.port}`)
+
+  if (!args.state)
+    console.warn("No state file provided. To save to a persistent location, set the --state flag.");
 
   const server = new TrieServer(args.state);
   server.serve(args.port);

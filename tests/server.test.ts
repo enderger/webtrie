@@ -53,7 +53,8 @@ Deno.test("Load from valid state", async () => {
   }
 })
 
-Deno.test("Adding and removing keys", async () => {
+// Since the server acts as a frontend to the trie, I only need to test a few methods here
+Deno.test("Modifying the trie", async () => {
   const CHANGEDSTATE = '/tmp/trie_server.test_invalid';
 
   try {
@@ -74,3 +75,5 @@ Deno.test("Adding and removing keys", async () => {
     await Deno.remove(CHANGEDSTATE);
   }
 })
+
+
