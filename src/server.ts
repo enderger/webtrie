@@ -1,3 +1,4 @@
+import * as log from "https://deno.land/std@0.103.0/log/mod.ts";
 import { serve } from "https://deno.land/std@0.103.0/http/server.ts";
 import { readAll } from "https://deno.land/std@0.103.0/io/util.ts";
 import { ensureFileSync } from "https://deno.land/std@0.103.0/fs/ensure_file.ts";
@@ -19,7 +20,7 @@ export default class TrieServer {
       this.#state = Trie.from(object);
     }
     catch (error) {
-      console.warn(`JSON parsing failed: ${error}. Using empty trie instead.`);
+      log.warning(`JSON parsing failed: ${error}. Using empty trie instead.`);
       this.#state = new Trie();
     }
   }
@@ -30,13 +31,14 @@ export default class TrieServer {
       try {
         const rawBody = await readAll(req.body)
         const decodedBody = new TextDecoder('utf-8').decode(rawBody);
-        console.debug(`REQUEST: ${decodedBody}`)
+        log.debug(`REQUEST: ${decodedBody}`)
         const body = JSON.parse(decodedBody);
 
         const output = this.dispatchAction(body.action ?? '', body);
         req.respond({ status: 200, body: output });
       }
       catch (error) {
+        log.error(`Request errored: ${error.toString()}`)
         req.respond({ status: 500, body: error.toString() });
       }
     }
@@ -105,10 +107,10 @@ function parseServerArgs(args: string[]): Args {
 
 if (import.meta.main) {
   const args = parseServerArgs(Deno.args);
-  console.log(`Starting server on port ${args.port}`)
+  log.info(`Starting server on port ${args.port}`)
 
   if (!args.state)
-    console.warn("No state file provided. To save to a persistent location, set the --state flag.");
+    log.warning("No state file provided. To save to a persistent location, set the --state flag.");
 
   const server = new TrieServer(args.state);
   server.serve(args.port);
