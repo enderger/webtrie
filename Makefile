@@ -1,4 +1,4 @@
-SHARED_ARGS:=--import-map=import_map.json
+SHARED_ARGS:=--unstable --import-map=import_map.json
 
 CLIENT_MODULE:=src/cli.ts
 CLIENT_ARGS:=$(SHARED_ARGS) --allow-net

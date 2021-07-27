@@ -10,7 +10,7 @@ export default class TrieServer {
   #state: Trie;
   readonly stateFile: string;
 
-  constructor(stateFile = "/tmp/trie_server.state.json") {
+  constructor(stateFile = "/tmp/webtrie_server.state.json") {
     this.stateFile = stateFile;
 
     try {
@@ -26,8 +26,8 @@ export default class TrieServer {
   }
 
   /// Serve the trie on port
-  async serve(port = '8080') {
-    for await (const req of serve({port: parseInt(port)})) {
+  async serve(addr = '::1:8080') {
+    for await (const req of serve(addr)) {
       try {
         if (req.headers.get('Content-Type') !== 'application/json')
           throw "Non-JSON request recieved!";
@@ -96,12 +96,12 @@ export default class TrieServer {
 function parseServerArgs(args: string[]): Args {
   const options = {
     alias: {
-      p: 'port',
+      a: 'addr',
       s: 'state'
     },
-    string: [ 'port', 'state' ],
+    string: [ 'addr', 'state' ],
     default: {
-      port: 8080,
+      addr: '::1:8080',
       state: undefined
     }
   };
@@ -109,13 +109,23 @@ function parseServerArgs(args: string[]): Args {
   return parse(args, options);
 }
 
+/// Setup the SIGINT handler
+async function handleSIGINT(server: TrieServer): Promise<never> {
+  await Deno.signals.interrupt();
+  log.info("Saving state...");
+  await server.writeState();
+
+  Deno.exit(0);
+}
+
 if (import.meta.main) {
   const args = parseServerArgs(Deno.args);
-  log.info(`Starting server on port ${args.port}`)
+  log.info(`Starting server on address ${args.addr}`)
 
   if (!args.state)
     log.warning("No state file provided. To save to a persistent location, set the --state flag.");
 
   const server = new TrieServer(args.state);
-  server.serve(args.port);
+  handleSIGINT(server);
+  server.serve(args.addr);
 }

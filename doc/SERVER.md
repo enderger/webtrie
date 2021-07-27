@@ -29,9 +29,9 @@ Each operation is a HTTP POST request with a body of the following format:
 }
 ```
 
-To perform an action using CURL, simply use the following template:
+To perform an action using CURL, simply use the following template (note the content type):
 ```bash
-curl <SERVER> --data '<BODY>'
+curl <SERVER> --data '<BODY>' -H 'Content-Type: application/json'
 ```
 
 ### Add
