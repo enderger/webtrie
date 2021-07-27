@@ -92,6 +92,7 @@ export default class TrieServer {
   }
 }
 
+/// Parse the arguments passed to the server
 function parseServerArgs(args: string[]): Args {
   const options = {
     alias: {

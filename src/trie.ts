@@ -6,6 +6,7 @@ export default class Trie {
     this.root = makeNode();
   }
 
+  /// Convert the given state into a trie
   static from(state: Record<string, string>): Trie {
     return Object.assign(new Trie(), state);
   }
@@ -50,15 +51,18 @@ export default class Trie {
   }
 }
 
+/// A single node in the trie
 interface Node {
   isResult: boolean,
   children: Record<string, Node>,
 }
 
+/// Factory to create Nodes for the trie
 function makeNode(isResult = false, children: Record<string, Node> = {}): Node {
   return { isResult, children };
 }
 
+/// Add a key to the given node
 function addKey(node: Node, key: string) {
   // Handle the case where this is the node we are looking for
   if (key.length === 0) {
@@ -77,6 +81,7 @@ function addKey(node: Node, key: string) {
 
 // NOTE: The return value of this function indicates whether this node is dangling
 // It is primarily intended to help with recursive cleanup
+/// Remove a key from the given node
 function removeKey(node: Node, key: string): boolean {
     if ((node ?? undefined) === undefined)
       throw "Could not remove a nonexistent key!";
@@ -101,6 +106,7 @@ function removeKey(node: Node, key: string): boolean {
     return Object.keys(node.children).length === 0;
 }
 
+/// Find a key in the given node
 function findKey(node: Node, key: string): boolean {
     if (node === undefined)
       return false;
@@ -111,6 +117,7 @@ function findKey(node: Node, key: string): boolean {
     return findKey(node.children[key.charAt(0)], key.substring(1));
 }
 
+/// Get up to a given number of completions for the given prefix in a node
 function getCompletions(node: Node, prefix: string, count: number): string[] {
   const completions: string[] = [];
 
@@ -137,6 +144,7 @@ function getCompletions(node: Node, prefix: string, count: number): string[] {
   return completions;
 }
 
+/// Helper to traverse a given path through a node hierarchy
 function getChild(node: Node, path: string): Node | null {
   if (path.length === 0)
     return node;

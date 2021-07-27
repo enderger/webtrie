@@ -1,9 +1,10 @@
 import * as c from "std/fmt/colors.ts";
 import { parse, Args } from "std/flags/mod.ts";
 
+/// The name of the application
 const NAME = 'webtrie-cli';
 
-// Execute a command for the CLI.
+/// Execute a command for the CLI.
 export async function execute(
   [action, ...args]: string[],
   server = 'http://0.0.0.0:8080', quiet = false,
@@ -63,13 +64,13 @@ export async function execute(
     break;
 
     case 'help':
-      console.log(c.green(`USAGE: webtrie-cli <COMMAND> [-s=SERVER] [--quiet] <ARGUMENTS>`));
+      console.log(c.green(`USAGE: ${NAME} <COMMAND> [-s=SERVER] [--quiet] <ARGUMENTS>`));
       console.log(c.green('COMMANDS: add remove find complete show help'))
       console.log(c.green('See the documentation for more info.'));
     return true;
 
     default:
-      console.error(c.red('Invalid usage. Use \'webtrie-cli help\' for more info.'));
+      console.error(c.red(`Invalid usage. Use '${NAME} help' for more info.`));
     return false;
   }
 
@@ -89,6 +90,7 @@ export async function execute(
 }
 
 
+/// Send a request to the given server
 async function sendServerRequest(server: string, body: Record<string, string>): Promise<Response> {
   const resp = await fetch(server, {
     headers: {
@@ -101,6 +103,7 @@ async function sendServerRequest(server: string, body: Record<string, string>): 
   return resp;
 }
 
+/// Parse the given set of CLI arguments for the client
 function parseArgs(args: string[]): Args {
   const options = {
     alias: {
