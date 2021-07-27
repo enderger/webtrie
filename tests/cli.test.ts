@@ -4,6 +4,8 @@ import { delay } from "std/async/delay.ts";
 import { execute } from "/src/cli.ts";
 
 console.error = () => {};
+console.log = () => {};
+
 const SERVER_STATE_DIR = '/tmp/trie_server.test_client_state.json';
 const SERVER_ADDR = 'http://localhost:8080';
 await Deno.remove(SERVER_STATE_DIR).catch(_ => {});

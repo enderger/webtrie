@@ -1,6 +1,8 @@
 import * as c from "std/fmt/colors.ts";
 import { parse, Args } from "std/flags/mod.ts";
 
+const NAME = 'webtrie-cli';
+
 // Execute a command for the CLI.
 export async function execute(
   [action, ...args]: string[],
@@ -8,7 +10,6 @@ export async function execute(
 ): Promise<boolean> {
   const body: Record<string, string> = { action };
   let responseHandler = (text: string) => text;
-  let commandArity = -1;
 
   const log = (message: string) => {
     if (!quiet) console.log(message);
@@ -18,13 +19,17 @@ export async function execute(
     case 'add':
       log(c.green(`Adding ${args[0]}...`));
       body.key = args[0];
-      commandArity = 1;
+
+      if (args.length !== 1)
+        throw `Invalid usage. Usage: ${NAME} add <KEY>`;
     break;
 
     case 'remove':
       log(c.green(`Removing ${args[0]}...`));
       body.key = args[0];
-      commandArity = 1;
+
+      if (args.length !== 1)
+        throw `Invalid usage. Usage: ${NAME} remove <KEY>`;
     break;
 
     case 'find':
@@ -36,31 +41,35 @@ export async function execute(
          ? "Found!"
          : "Not found."
          ;
-      commandArity = 1;
+
+      if (args.length !== 1)
+        throw `Invalid usage. Usage: ${NAME} find <KEY>`;
     break;
 
     case 'complete':
       log(c.green(`Getting completions for ${args[0]}...`));
       body.prefix = args[0];
       body.count = args[1] ?? '';
-      commandArity = 2;
+
+      if (args.length < 1 || args.length > 2)
+        throw `Invalid usage. Usage: ${NAME} complete <PREFIX> [<COUNT>]`
     break;
 
     case 'show':
       log(c.green("Showing..."));
-      commandArity = 0;
+
+      if (args.length !== 0)
+        throw `Invalid usage. Usage: ${NAME} show`;
     break;
 
     case 'help':
-      console.log(c.green(`USAGE: trie-cli <COMMAND> [-s=SERVER] <ARGUMENTS>`));
+      console.log(c.green(`USAGE: webtrie-cli <COMMAND> [-s=SERVER] [--quiet] <ARGUMENTS>`));
       console.log(c.green('COMMANDS: add remove find complete show help'))
       console.log(c.green('See the documentation for more info.'));
-      commandArity = 0;
     return true;
-  }
 
-  if (args.length !== commandArity) {
-    console.error(c.red('Invalid usage. Use \'trie-cli help\' for more info.'));
+    default:
+      console.error(c.red('Invalid usage. Use \'webtrie-cli help\' for more info.'));
     return false;
   }
 
@@ -103,6 +112,7 @@ function parseArgs(args: string[]): Args {
     boolean: [ 'quiet' ],
 
     default: {
+      // TODO SETUP DEFAULT SERVER
       server: 'http://0.0.0.0:8080',
       quiet: false,
     }
