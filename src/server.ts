@@ -1,5 +1,5 @@
 import * as log from "std/log/mod.ts";
-import { serve } from "std/http/server.ts";
+import { serve, _parseAddrFromStr } from "std/http/server.ts";
 import { readAll } from "std/io/util.ts";
 import { ensureFileSync } from "std/fs/ensure_file.ts";
 import { Args, parse } from "std/flags/mod.ts";
@@ -26,7 +26,7 @@ export default class TrieServer {
   }
 
   /// Serve the trie on port
-  async serve(addr = '::1:8080') {
+  async serve(addr = '0.0.0.0:8080') {
     for await (const req of serve(addr)) {
       try {
         if (req.headers.get('Content-Type') !== 'application/json')
@@ -101,7 +101,7 @@ function parseServerArgs(args: string[]): Args {
     },
     string: [ 'addr', 'state' ],
     default: {
-      addr: '::1:8080',
+      addr: '0.0.0.0:8080',
       state: undefined
     }
   };
