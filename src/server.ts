@@ -1,9 +1,9 @@
-import * as log from "https://deno.land/std@0.103.0/log/mod.ts";
-import { serve } from "https://deno.land/std@0.103.0/http/server.ts";
-import { readAll } from "https://deno.land/std@0.103.0/io/util.ts";
-import { ensureFileSync } from "https://deno.land/std@0.103.0/fs/ensure_file.ts";
-import { Args, parse } from "https://deno.land/std@0.103.0/flags/mod.ts";
-import Trie from "./trie.ts";
+import * as log from "std/log/mod.ts";
+import { serve } from "std/http/server.ts";
+import { readAll } from "std/io/util.ts";
+import { ensureFileSync } from "std/fs/ensure_file.ts";
+import { Args, parse } from "std/flags/mod.ts";
+import Trie from "/src/trie.ts";
 
 /// A representation of the server which serves our trie
 export default class TrieServer {

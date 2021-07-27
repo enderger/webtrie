@@ -1,8 +1,8 @@
-import * as log from "https://deno.land/std@0.103.0/log/mod.ts";
-import { assert, assertEquals } from "https://deno.land/std@0.103.0/testing/asserts.ts";
-import { exists } from "https://deno.land/std@0.103.0/fs/exists.ts";
-import Trie from "../src/trie.ts";
-import TrieServer from "../src/server.ts";
+import * as log from "std/log/mod.ts";
+import { assert, assertEquals } from "std/testing/asserts.ts";
+import { exists } from "std/fs/exists.ts";
+import Trie from "/src/trie.ts";
+import TrieServer from "/src/server.ts";
 
 await log.setup({
   handlers: {

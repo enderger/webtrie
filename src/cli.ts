@@ -1,27 +1,34 @@
-import * as c from "https://deno.land/std@0.103.0/fmt/colors.ts";
-import { parse, Args } from "https://deno.land/std@0.103.0/flags/mod.ts";
+import * as c from "std/fmt/colors.ts";
+import { parse, Args } from "std/flags/mod.ts";
 
 // Execute a command for the CLI.
-export async function execute(server: string, [action, ...args]: string[]): Promise<boolean> {
+export async function execute(
+  [action, ...args]: string[],
+  server = 'http://0.0.0.0:8080', quiet = false,
+): Promise<boolean> {
   const body: Record<string, string> = { action };
   let responseHandler = (text: string) => text;
   let commandArity = -1;
 
+  const log = (message: string) => {
+    if (!quiet) console.log(message);
+  };
+
   switch (action?.toLowerCase()) {
     case 'add':
-      console.log(c.green(`Adding ${args[0]}...`));
+      log(c.green(`Adding ${args[0]}...`));
       body.key = args[0];
       commandArity = 1;
     break;
 
     case 'remove':
-      console.log(c.green(`Removing ${args[0]}...`));
+      log(c.green(`Removing ${args[0]}...`));
       body.key = args[0];
       commandArity = 1;
     break;
 
     case 'find':
-      console.log(c.green(`Searching for ${args[0]}...`));
+      log(c.green(`Searching for ${args[0]}...`));
       body.key = args[0];
 
       responseHandler =
@@ -33,14 +40,14 @@ export async function execute(server: string, [action, ...args]: string[]): Prom
     break;
 
     case 'complete':
-      console.log(c.green(`Getting completions for ${args[0]}...`));
+      log(c.green(`Getting completions for ${args[0]}...`));
       body.prefix = args[0];
       body.count = args[1] ?? '';
       commandArity = 2;
     break;
 
     case 'show':
-      console.log(c.green("Showing..."));
+      log(c.green("Showing..."));
       commandArity = 0;
     break;
 
@@ -62,7 +69,7 @@ export async function execute(server: string, [action, ...args]: string[]): Prom
 
   if (response.ok) {
     if (text) console.log(responseHandler(text));
-    console.log(c.green("Done!"));
+    log(c.green("Done!"));
   }
   else {
     console.error(c.red(text));
@@ -89,12 +96,15 @@ function parseArgs(args: string[]): Args {
   const options = {
     alias: {
       s: 'server',
+      q: 'quiet'
     },
 
     string: [ 'server' ],
+    boolean: [ 'quiet' ],
 
     default: {
       server: 'http://0.0.0.0:8080',
+      quiet: false,
     }
   };
 
@@ -102,7 +112,7 @@ function parseArgs(args: string[]): Args {
 }
 
 if (import.meta.main) {
-  const { _: args, server } = parseArgs(Deno.args);
-  const success = await execute(server, args.map(it => it.toString()));
+  const { _: args, quiet, server } = parseArgs(Deno.args);
+  const success = await execute(args.map(it => it.toString()), server, quiet);
   Deno.exit(success ? 0 : 1);
 }
