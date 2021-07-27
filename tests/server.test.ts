@@ -1,7 +1,20 @@
+import * as log from "https://deno.land/std@0.103.0/log/mod.ts";
 import { assert, assertEquals } from "https://deno.land/std@0.103.0/testing/asserts.ts";
 import { exists } from "https://deno.land/std@0.103.0/fs/exists.ts";
 import Trie from "../src/trie.ts";
 import TrieServer from "../src/server.ts";
+
+await log.setup({
+  handlers: {
+    console: new log.handlers.ConsoleHandler("ERROR"),
+  },
+  loggers: {
+    default: {
+      level: "ERROR",
+      handlers: ["console"],
+    },
+  }
+})
 
 Deno.test("Load from empty state", async () => {
   const FAKESTATE = '/tmp/trie_server.test_missing_state.json';

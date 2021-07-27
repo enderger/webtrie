@@ -2,19 +2,22 @@ import * as c from "https://deno.land/std@0.103.0/fmt/colors.ts";
 import { parse, Args } from "https://deno.land/std@0.103.0/flags/mod.ts";
 
 // Execute a command for the CLI.
-async function execute(server: string, [action, ...args]: string[]): Promise<boolean> {
+export async function execute(server: string, [action, ...args]: string[]): Promise<boolean> {
   const body: Record<string, string> = { action };
   let responseHandler = (text: string) => text;
+  let commandArity = -1;
 
   switch (action?.toLowerCase()) {
     case 'add':
       console.log(c.green(`Adding ${args[0]}...`));
       body.key = args[0];
+      commandArity = 1;
     break;
 
     case 'remove':
       console.log(c.green(`Removing ${args[0]}...`));
       body.key = args[0];
+      commandArity = 1;
     break;
 
     case 'find':
@@ -26,26 +29,31 @@ async function execute(server: string, [action, ...args]: string[]): Promise<boo
          ? "Found!"
          : "Not found."
          ;
+      commandArity = 1;
     break;
 
     case 'complete':
       console.log(c.green(`Getting completions for ${args[0]}...`));
       body.prefix = args[0];
       body.count = args[1] ?? '';
+      commandArity = 2;
     break;
 
     case 'show':
       console.log(c.green("Showing..."));
+      commandArity = 0;
     break;
 
     case 'help':
       console.log(c.green(`USAGE: trie-cli <COMMAND> [-s=SERVER] <ARGUMENTS>`));
       console.log(c.green('COMMANDS: add remove find complete show help'))
       console.log(c.green('See the documentation for more info.'));
+      commandArity = 0;
     return true;
+  }
 
-    default:
-      console.error(c.red('Invalid usage. Use \'trie-cli help\' for more info.'));
+  if (args.length !== commandArity) {
+    console.error(c.red('Invalid usage. Use \'trie-cli help\' for more info.'));
     return false;
   }
 
