@@ -30,7 +30,7 @@ export default class TrieServer {
     for await (const req of serve(addr)) {
       try {
         if (req.headers.get('Content-Type') !== 'application/json')
-          throw "Non-JSON request recieved!";
+          throw new Error("Non-JSON request recieved!");
 
         const rawBody: Uint8Array = await readAll(req.body)
         const decodedBody: string = new TextDecoder('utf-8').decode(rawBody);
@@ -42,7 +42,7 @@ export default class TrieServer {
       }
       catch (error) {
         log.error(`Request errored: ${error.toString()}`)
-        req.respond({ status: 500, body: `Error: ${error}` });
+        req.respond({ status: 500, body: `Error: ${error.message}` });
       }
     }
   }
@@ -77,8 +77,8 @@ export default class TrieServer {
         result = `Actions: add, remove, find, suggest, show, help`;
       break;
 
-      case '': throw "No action specified!";
-      default: throw `Invalid action: ${action}`;
+      case '': throw new Error("No action specified!");
+      default: throw new Error(`Invalid action: ${action}`);
     }
 
     this.writeState();

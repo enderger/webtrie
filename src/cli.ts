@@ -22,7 +22,7 @@ export async function execute(
       body.key = args[0];
 
       if (args.length !== 1)
-        throw `Invalid usage. Usage: ${NAME} add <KEY>`;
+        throw new Error(`Invalid usage. Usage: ${NAME} add <KEY>`);
     break;
 
     case 'remove':
@@ -30,7 +30,7 @@ export async function execute(
       body.key = args[0];
 
       if (args.length !== 1)
-        throw `Invalid usage. Usage: ${NAME} remove <KEY>`;
+        throw new Error(`Invalid usage. Usage: ${NAME} remove <KEY>`);
     break;
 
     case 'find':
@@ -44,7 +44,7 @@ export async function execute(
          ;
 
       if (args.length !== 1)
-        throw `Invalid usage. Usage: ${NAME} find <KEY>`;
+        throw new Error(`Invalid usage. Usage: ${NAME} find <KEY>`);
     break;
 
     case 'complete':
@@ -53,14 +53,14 @@ export async function execute(
       body.count = args[1] ?? '';
 
       if (args.length < 1 || args.length > 2)
-        throw `Invalid usage. Usage: ${NAME} complete <PREFIX> [<COUNT>]`
+        throw new Error(`Invalid usage. Usage: ${NAME} complete <PREFIX> [<COUNT>]`)
     break;
 
     case 'show':
       log(c.green("Showing..."));
 
       if (args.length !== 0)
-        throw `Invalid usage. Usage: ${NAME} show`;
+        throw new Error(`Invalid usage. Usage: ${NAME} show`);
     break;
 
     case 'help':

@@ -14,7 +14,7 @@ export default class Trie {
   /// Add a key to the trie
   addKey(key: string) {
     if ((key?.length ?? 0) === 0)
-      throw "Attempted to add empty or missing key!";
+      throw new Error("Attempted to add empty or missing key!");
 
     addKey(this.root, key);
   }
@@ -22,7 +22,7 @@ export default class Trie {
   /// Remove a key from the trie
   removeKey(key: string) {
     if ((key?.length ?? 0) === 0)
-      throw "Attempted to remove an empty or missing key!";
+      throw new Error("Attempted to remove an empty or missing key!");
 
     removeKey(this.root, key);
   }
@@ -67,7 +67,7 @@ function addKey(node: Node, key: string) {
   // Handle the case where this is the node we are looking for
   if (key.length === 0) {
     if (node.isResult)
-      throw "Attempted to add an already existing key!";
+      throw new Error("Attempted to add an already existing key!");
 
     node.isResult = true;
     return true;
@@ -84,12 +84,12 @@ function addKey(node: Node, key: string) {
 /// Remove a key from the given node
 function removeKey(node: Node, key: string): boolean {
     if ((node ?? undefined) === undefined)
-      throw "Could not remove a nonexistent key!";
+      throw new Error("Could not remove a nonexistent key!");
 
     if (key.length === 0) {
       // Handle case where this node is the target
       if (!node.isResult)
-        throw "Could not remove a node which is not a valid result!";
+        throw new Error("Could not remove a node which is not a valid result!");
 
       node.isResult = false;
     }

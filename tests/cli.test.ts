@@ -1,4 +1,4 @@
-import { assert } from "std/testing/asserts.ts";
+import { assert, assertThrowsAsync } from "std/testing/asserts.ts";
 import * as path from "std/path/mod.ts";
 import { delay } from "std/async/delay.ts";
 import { execute } from "/src/cli.ts";
@@ -16,9 +16,8 @@ Deno.run({
     Deno.execPath(),
     'run',
     '--quiet',
-    '--allow-read',
-    '--allow-write',
-    '--allow-net',
+    '--unstable',
+    '--allow-all',
     '--import-map=../import_map.json',
     '../src/server.ts',
     `-s=${SERVER_STATE_DIR}`
@@ -46,9 +45,8 @@ Deno.test("Valid command", async () => {
   assert(result, "Error shown for valid subcommand!");
 })
 
-Deno.test("Valid command with invalid arity", async () => {
-  const result = await testClientWith('add', 'foo', 'baz');
-  assert(!result, "No error shown for invalid arity!");
+Deno.test("Valid command with invalid arity", () => {
+  assertThrowsAsync(() => testClientWith('add', 'foo', 'baz'));
 })
 
 Deno.test("Valid command with valid arity", async () => {
