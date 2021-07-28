@@ -11,10 +11,12 @@ You can also use `deno run --allow-net src/cli.ts` to run the client without ins
 ## Usage
 The basic usage of this program is `webtrie-cli [-s=SERVER] [--quiet] <COMMAND> <ARGS>`.
 
-### Flags
+### Options
 
-- `-s | --server=SERVER` : Sets the server to read the state from.
-- `-q | --quiet` : Produce less verbose output.
+Short| Long   |  Description  |
+-----| ------ | --------------|
+ -s  | server | Sets the server to communicate with. Defaults to our [hosted instance](./SERVER.md). |
+ -q  | quiet  | Produce less verbose output. |
 
 ### Commands
 

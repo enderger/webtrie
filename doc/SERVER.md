@@ -2,7 +2,7 @@
 This file documents the server running WebTrie.
 
 ## Hosted Instance
-TODO: Implement hosted instance
+This project runs a hosted instance on a Linux VM provided by [AlwaysData](https://alwaysdata.net). It's available at `http://enderger.alwaysdata.net`, and is used as the default for the CLI app.
 
 ## Self-Hosting
 
@@ -13,9 +13,10 @@ TODO: Implement hosted instance
 You can also use `deno run --allow-net --allow-read --allow-write src/server.ts` to run without installing. Note that you will need to configure a state file path on Windows, since by default the server saves it's state to a \*NIX path.
 
 ### Options
-
-- `-p | --port` : The port on which to run the server. Defaults to 8080.
-- `-s | --state` : The file to write the state to. Defaults to a \*NIX temporary file.
+Short| Long  | Description
+-----| ----- | -----------
+-p   | port  | The port on which to run the server. Defaults to 8080.
+-s   | state | The file to write the state to. Defaults to a *NIX temporary file.
 
 ## Protocol
 WebTrie is built atop a system of HTTP POST requests with JSON bodies. The CLI is a thin wrapper around a HTTP client which makes these requests. The server wraps a standard trie with a HTTP server and persistent storage capability.

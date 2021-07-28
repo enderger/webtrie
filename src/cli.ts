@@ -1,13 +1,13 @@
 import * as c from "std/fmt/colors.ts";
 import { parse, Args } from "std/flags/mod.ts";
 
-/// The name of the application
 const NAME = 'webtrie-cli';
+const DEFAULT_SERVER = 'http://enderger.alwaysdata.net';
 
 /// Execute a command for the CLI.
 export async function execute(
   [action, ...args]: string[],
-  server = 'http://0.0.0.0:8080', quiet = false,
+  server = DEFAULT_SERVER, quiet = false,
 ): Promise<boolean> {
   const body: Record<string, string> = { action };
   let responseHandler = (text: string) => text;
@@ -115,8 +115,7 @@ function parseArgs(args: string[]): Args {
     boolean: [ 'quiet' ],
 
     default: {
-      // TODO SETUP DEFAULT SERVER
-      server: 'http://0.0.0.0:8080',
+      server: DEFAULT_SERVER,
       quiet: false,
     }
   };
